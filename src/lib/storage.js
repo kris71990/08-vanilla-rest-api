@@ -36,7 +36,21 @@ storage.fetchAll = function fetchAll(schema) {
     if (!schema) return reject(new Error('Cannot find items - schema required'));
     if (!memory[schema]) return reject(new Error('Could not find any items of this schema'));
     
-    const items = Object.keys(memory[schema]);
+    const items = memory[schema];
     return resolve(items);
+  });
+};
+
+storage.delete = function del(schema, id) {
+  return new Promise((resolve, reject) => {
+    if (!schema) return reject(new Error('Cannot find items - schema required'));
+    if (!id) return reject(new Error('Could not find item - id required'));
+    const item = memory[schema][id];
+
+    if (!item) {
+      return reject(new Error('item does not exist'));
+    } 
+    memory[schema][item.id] = null;
+    return resolve('Item deleted');
   });
 };

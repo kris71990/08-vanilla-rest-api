@@ -25,7 +25,7 @@ Router.prototype.put = function put(endpoint, callback) {
   this.routes.PUT[endpoint] = callback;
 };
 
-Router.prototype.delete = function del(endpoint, callback) {
+Router.prototype.del = function del(endpoint, callback) {
   this.routes.DELETE[endpoint] = callback;
 };
 
@@ -33,9 +33,10 @@ Router.prototype.route = function route() {
   return (req, res) => {
     Promise.all([urlParser(req), bodyParser(req)])
       .then(() => {
-        if (typeof this.route[req.method][req.url.pathname] === 'function') {
+        logger.log(logger.INFO, req.url.pathname);
+        if (typeof this.routes[req.method][req.url.pathname] === 'function') {
           logger.log(logger.INFO, 'blahblahblah');
-          this.route[req.method][req.url.pathname](req, res);
+          this.routes[req.method][req.url.pathname](req, res);
           return;
         }
 
@@ -50,7 +51,7 @@ Router.prototype.route = function route() {
           res.end();
           return undefined;
         }
-        logger.log(logger.ERROR, JSON.stringify(err));
+        logger.log(logger.ERROR, 'hi');
         res.writeHead(400, { 'Content-Type': 'text/plain' });
         res.write('400 - Bad request');
         res.end();
