@@ -20,35 +20,34 @@ storage.create = function create(schema, item) {
 };
 
 storage.fetchOne = function fetchOne(schema, id) {
-  if (!schema) return reject(new Error('Cannot create new item - schema required'));
-  if (!id) return reject(new Error('Cannot find item - id required'));
+  // if (!schema) return reject(new Error('Cannot create new item - schema required'));
+  // if (!id) return reject(new Error('Cannot find item - id required'));
 
-  return fs.readFileProm(`${__dirname}/../data/${id}.json`)
-    .then((buffer) => {
-      try {
-        const item = JSON.parse(buffer.toString());
-        return item;
-      } catch (err) {
-        return Promise.reject(err);
-      }
-    })
-    .catch((err) => {
-      logger.log(logger.ERROR, err);
-    });
+  // return fs.readFileProm(`${__dirname}/../data/${id}.json`)
+  //   .then((buffer) => {
+  //     try {
+  //       const item = JSON.parse(buffer.toString());
+  //       return item;
+  //     } catch (err) {
+  //       return Promise.reject(err);
+  //     }
+  //   })
+  //   .catch((err) => {
+  //     logger.log(logger.ERROR, err);
+  //   });
+  return new Promise((resolve, reject) => {
+    if (!schema) return reject(new Error('Cannot create new item - schema required'));
+    if (!id) return reject(new Error('Cannot find item - id required'));
+    if (!memory[schema]) memory[schema] = {};
+    const item = memory[schema][id];
+  
+    if (!item) {
+      return reject(new Error('item not found'));
+    }
+    return resolve(item);
+  });
 };
 
-// return new Promise((resolve, reject) => {
-//   if (!schema) return reject(new Error('Cannot create new item - schema required'));
-//   if (!id) return reject(new Error('Cannot find item - id required'));
-//   if (!memory[schema]) memory[schema] = {};
-//   const item = memory[schema][id];
-
-//   if (!item) {
-//     return reject(new Error('item not found'));
-//   }
-//   return resolve(item);
-// });
-// };
 
 storage.fetchAll = function fetchAll(schema) {
   return new Promise((resolve, reject) => {
