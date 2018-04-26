@@ -89,7 +89,7 @@ module.exports = function carRoute(router) {
     try {
       storage.delete('Car', req.url.query.id)
         .then((message) => {
-          res.writeHead(201, { 'Content-Type': 'text/plain' });
+          res.writeHead(204, { 'Content-Type': 'text/plain' });
           res.write(message);
           res.end();
           return undefined;
