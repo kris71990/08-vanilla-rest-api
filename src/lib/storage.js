@@ -1,6 +1,8 @@
 'use strict';
 
 const logger = require('./logger');
+const Promise = require('bluebird');
+const fs = Promise.promisifyAll(require('fs'), { suffix: 'Prom' });
 
 const storage = module.exports = {};
 const memory = {};
@@ -18,18 +20,35 @@ storage.create = function create(schema, item) {
 };
 
 storage.fetchOne = function fetchOne(schema, id) {
-  return new Promise((resolve, reject) => {
-    if (!schema) return reject(new Error('Cannot create new item - schema required'));
-    if (!id) return reject(new Error('Cannot find item - id required'));
-    if (!memory[schema]) memory[schema] = {};
-    const item = memory[schema][id];
+  if (!schema) return reject(new Error('Cannot create new item - schema required'));
+  if (!id) return reject(new Error('Cannot find item - id required'));
 
-    if (!item) {
-      return reject(new Error('item not found'));
-    }
-    return resolve(item);
-  });
+  return fs.readFileProm(`${__dirname}/../data/${id}.json`)
+    .then((buffer) => {
+      try {
+        const item = JSON.parse(buffer.toString());
+        return item;
+      } catch (err) {
+        return Promise.reject(err);
+      }
+    })
+    .catch((err) => {
+      logger.log(logger.ERROR, err);
+    });
 };
+
+// return new Promise((resolve, reject) => {
+//   if (!schema) return reject(new Error('Cannot create new item - schema required'));
+//   if (!id) return reject(new Error('Cannot find item - id required'));
+//   if (!memory[schema]) memory[schema] = {};
+//   const item = memory[schema][id];
+
+//   if (!item) {
+//     return reject(new Error('item not found'));
+//   }
+//   return resolve(item);
+// });
+// };
 
 storage.fetchAll = function fetchAll(schema) {
   return new Promise((resolve, reject) => {
@@ -42,6 +61,7 @@ storage.fetchAll = function fetchAll(schema) {
 };
 
 storage.delete = function del(schema, id) {
+  logger.log(logger.INFO, 'delete');
   return new Promise((resolve, reject) => {
     if (!schema) return reject(new Error('Cannot find items - schema required'));
     if (!id) return reject(new Error('Could not find item - id required'));

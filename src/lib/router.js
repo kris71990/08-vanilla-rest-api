@@ -35,7 +35,6 @@ Router.prototype.route = function route() {
       .then(() => {
         logger.log(logger.INFO, req.url.pathname);
         if (typeof this.routes[req.method][req.url.pathname] === 'function') {
-          logger.log(logger.INFO, 'blahblahblah');
           this.routes[req.method][req.url.pathname](req, res);
           return;
         }
@@ -45,7 +44,9 @@ Router.prototype.route = function route() {
         res.end();
       })
       .catch((err) => {
+        console.log(err instanceof SyntaxError);
         if (err instanceof SyntaxError) {
+          console.log('hello');
           res.writeHead(404, { 'Content-Type': 'text/plain' });
           res.write('404 - Route not found'); 
           res.end();

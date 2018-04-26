@@ -5,13 +5,15 @@ const superagent = require('superagent');
 
 const testPort = 5000;
 const mockResource = { make: 'honda', model: 'civic', year: 2012 };
+const mockResource2 = { make: 'suburu', model: 'forester', year: 2010 };
 let mockId = null;
+let invalidid = 1234;
 
 beforeAll(() => server.start(testPort));
 afterAll(() => server.stop());
 
 describe('POST request to /api/car', () => {
-  test('should respond with creation of new car', () => {
+  test('POSTS creation of new car', () => {
     return superagent.post(`:${testPort}/api/car`)
       .send(mockResource)
       .then((res) => {
@@ -21,20 +23,22 @@ describe('POST request to /api/car', () => {
       });
   });
 
-  test('POST multiple cars to /api/cars/all', () => {
+  test('POST multiple cars', () => {
     return superagent.post(`:${testPort}/api/cars/all`)
-      .send(mockResource)
+      .send(JSON.stringify(mockResource))
+      .send(JSON.stringify(mockResource2))
       .then((res) => {
+        console.log(res.body);
         expect(res.status).toEqual(201);
       });
   });
 
-  // test.only('should return 400 error for bad request', () => {
+  // test('should return 400 error for bad request', () => {
   //   return superagent.post(`:${testPort}/api/car`)
-  //     .send('test')
+  //     .send(null)
   //     .then((res) => {
   //       console.log(res);
-  //       expect(res.status).toEqual(400);
+  //       expect(res.status).toEqual(404);
   //     });
   // });
 });
@@ -54,14 +58,18 @@ describe('GET request from api/car', () => {
   test('GET all should return entire schema', () => {
     return superagent.get(`:${testPort}/api/cars/all`)
       .then((res) => {
-        console.log(res.text);
         const parse = JSON.parse(res.text);
-        expect(parse.make).toEqual(mockResource.make);
-        expect(parse.model).toEqual(mockResource.model);
-        expect(parse.year).toEqual(mockResource.year);
+        expect(Object.keys(parse)).toHaveLength(2);
         expect(res.status).toEqual(200);
       });
   });
+
+  // test('GET with invalid id', () => {
+  //   return superagent.get(`:${testPort}/api/car?id=${invalidid}`)
+  //     .then((res) => {
+  //       console.log(res.status);
+  //     });
+  // });
 
   // test('shoud return 404 error if id does not exist', () => {
   //   return superagent.get(`:${testPort}/api/car?id=12345`)
@@ -74,9 +82,8 @@ describe('GET request from api/car', () => {
 
 // describe('delete', () => {
 //   test('should return message', () => {
-//     return superagent.delete(`${testPort}/api/car`)
+//     return superagent.delete(`${testPort}/api/car?id=${mockId}`)
 //       .then((res) => {
-//         console.log(res);
 //       });
 //   });
 // });

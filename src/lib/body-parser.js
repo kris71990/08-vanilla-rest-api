@@ -3,6 +3,7 @@
 const logger = require('./logger');
 
 module.exports = function bodyParser(req) {
+  console.log(req.method)
   return new Promise((resolve, reject) => {
     if (req.method !== 'POST' && req.method !== 'PUT') {
       return resolve(req);
@@ -23,7 +24,11 @@ module.exports = function bodyParser(req) {
       }
     });
 
-    req.on('error', err => reject(err));
+    req.on('error', (err) => {
+      console.log('delete')
+      logger.log(logger.ERROR, err);
+      reject(err);
+    });
     return undefined;
   });
 };
