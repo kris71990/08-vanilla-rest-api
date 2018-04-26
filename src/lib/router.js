@@ -34,6 +34,7 @@ Router.prototype.route = function route() {
     Promise.all([urlParser(req), bodyParser(req)])
       .then(() => {
         if (typeof this.route[req.method][req.url.pathname] === 'function') {
+          logger.log(logger.INFO, 'blahblahblah');
           this.route[req.method][req.url.pathname](req, res);
           return;
         }
@@ -47,12 +48,13 @@ Router.prototype.route = function route() {
           res.writeHead(404, { 'Content-Type': 'text/plain' });
           res.write('404 - Route not found'); 
           res.end();
-          return;
+          return undefined;
         }
         logger.log(logger.ERROR, JSON.stringify(err));
         res.writeHead(400, { 'Content-Type': 'text/plain' });
         res.write('400 - Bad request');
         res.end();
+        return undefined;
       });
   };
 };

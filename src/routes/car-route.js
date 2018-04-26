@@ -12,7 +12,7 @@ module.exports = function carRoute(router) {
       const newCar = new Car(req.body.make, req.body.model, req.body.year);
       storage.create('Car', newCar)
         .then((car) => {
-          res.writeHad(201, { 'Content-Type': 'application/json' });
+          res.writeHead(201, { 'Content-Type': 'application/json' });
           res.write(JSON.stringify(car));
           res.end();
           return undefined;
@@ -40,14 +40,12 @@ module.exports = function carRoute(router) {
         res.writeHead(200, { 'Content-Type': 'text/plain' });
         res.write(JSON.stringify(item));
         res.end();
-        return undefined;
       })
       .catch((err) => {
         logger.log(logger.ERROR, err, JSON.stringify(err));
         res.writeHead(404, { 'Content-Type': 'text/plain' });
         res.write('Resource not found');
         res.end();
-        return undefined;
       });
     return undefined;
   }); 
