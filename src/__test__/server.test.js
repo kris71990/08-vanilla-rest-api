@@ -7,7 +7,6 @@ const testPort = 5000;
 const mockResource = { make: 'honda', model: 'civic', year: 2012 };
 const mockResource2 = { make: 'suburu', model: 'forester', year: 2010 };
 let mockId = null;
-let invalidid = 1234;
 
 beforeAll(() => server.start(testPort));
 afterAll(() => server.stop());
@@ -25,21 +24,12 @@ describe('POST request to /api/car', () => {
 
   test('POST multiple cars', () => {
     return superagent.post(`:${testPort}/api/cars/all`)
-      .send(JSON.stringify(mockResource))
+      .send(mockResource)
+      .send(mockResource2)
       .then((res) => {
         expect(res.status).toEqual(201);
       });
   });
-
-  // --------------------------------------------
-  // test('should return 400 error for bad request', () => {
-  //   return superagent.post(`:${testPort}/api/car`)
-  //     .send(null)
-  //     .then((res) => {
-  //       console.log(res);
-  //       expect(res.status).toEqual(404);
-  //     });
-  // });
 });
 
 describe('GET request from api/car', () => {
@@ -63,20 +53,21 @@ describe('GET request from api/car', () => {
       });
   });
 
-  // --------------------------------------------
   test('GET with invalid id', () => {
-    return superagent.get(`:${testPort}/api/car?id=${invalidid}`)
-      .then((res) => {
-        console.log(res.status);
+    return superagent.get(`:${testPort}/api/car?id=1`)
+      .query({})
+      .catch((err) => {
+        expect(err.status).toEqual(404);
+        expect(err).toBeTruthy();
       });
   });
 
-  // --------------------------------------------
-  test('shoud return 404 error if id does not exist', () => {
-    return superagent.get(`:${testPort}/api/car?id=12345`)
-      .then((res) => {
-        // console.log(res.status);
-        expect(res.status).toEqual(400);
+  test('shoud return 400 error if id does not exist', () => {
+    return superagent.get(`:${testPort}/api/car?id=`)
+      .query({})
+      .catch((err) => {
+        expect(err.status).toEqual(400);
+        expect(err).toBeTruthy();
       });
   });
 });
@@ -85,6 +76,8 @@ describe('GET request from api/car', () => {
 //   test('should return message', () => {
 //     return superagent.delete(`${testPort}/api/car?id=${mockId}`)
 //       .then((res) => {
+//         expect(res.status).toEqual(204);
+//         expect(res.body).toBeFalsy();
 //       });
 //   });
 // });
