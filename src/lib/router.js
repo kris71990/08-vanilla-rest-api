@@ -3,6 +3,7 @@
 const logger = require('./logger');
 const bodyParser = require('./body-parser');
 const urlParser = require('./url-parser');
+const response = require('./response');
 
 const Router = module.exports = function router() {
   this.routes = {
@@ -38,24 +39,14 @@ Router.prototype.route = function route() {
           this.routes[req.method][req.url.pathname](req, res);
           return;
         }
-
-        res.writeHead(404, { 'Content-Type': 'text/plain' });
-        res.write('400 - Route not found');
-        res.end();
+        response.sendText(res, 404, '404 - Route not found');
       })
       .catch((err) => {
-        console.log(err instanceof SyntaxError);
         if (err instanceof SyntaxError) {
-          console.log('hello');
-          res.writeHead(404, { 'Content-Type': 'text/plain' });
-          res.write('404 - Route not found'); 
-          res.end();
+          response.sendText(res, 404, '404 - Route not found');
           return undefined;
         }
-        logger.log(logger.ERROR, 'hi');
-        res.writeHead(400, { 'Content-Type': 'text/plain' });
-        res.write('400 - Bad request');
-        res.end();
+        response.sendText(res, 400, '400 - Bad request');
         return undefined;
       });
   };
