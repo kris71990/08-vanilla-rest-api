@@ -59,15 +59,12 @@ storage.fetchAll = function fetchAll(schema) {
 
 storage.delete = function del(schema, id) {
   logger.log(logger.INFO, 'delete');
-  return new Promise((resolve, reject) => {
-    if (!schema) return reject(new Error('Cannot find items - schema required'));
-    if (!id) return reject(new Error('Could not find item - id required'));
-    let item = memory[schema][id];
+  if (!schema) return Promise.reject(new Error('Cannot find items - schema required'));
+  if (!id) return Promise.reject(new Error('Could not find item - id required'));
 
-    if (!item) {
-      return reject(new Error('item does not exist'));
-    } 
-    item = null;
-    return resolve('Item deleted');
-  });
+  return fs.unlink(`${__dirname}/../data/${schema}/${id}.json`)
+    .then(() => {
+      logger.log(logger.INFO, 'Item deleted');
+      return undefined;
+    });
 };
