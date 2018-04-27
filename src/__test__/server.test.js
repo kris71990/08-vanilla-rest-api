@@ -47,8 +47,9 @@ describe('GET request from api/car', () => {
   test('GET all should return entire schema', () => {
     return superagent.get(`:${testPort}/api/cars/all`)
       .then((res) => {
-        const parse = JSON.parse(res.text);
-        expect(Object.keys(parse)).toHaveLength(2);
+        expect(res.body).toBeInstanceOf(Array);
+        expect(res.body[0].slice(-5)).toEqual('.json');
+        expect(res.body.length).toBeGreaterThan(1);
         expect(res.status).toEqual(200);
       });
   });

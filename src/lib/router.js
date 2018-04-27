@@ -39,25 +39,14 @@ Router.prototype.route = function route() {
           this.routes[req.method][req.url.pathname](req, res);
           return;
         }
-
         response.sendText(res, 404, '404 - Route not found');
-        // res.writeHead(404, { 'Content-Type': 'text/plain' });
-        // res.write('400 - Route not found');
-        // res.end();
       })
       .catch((err) => {
-        console.log(err instanceof SyntaxError);
         if (err instanceof SyntaxError) {
           response.sendText(res, 404, '404 - Route not found');
-          // res.writeHead(404, { 'Content-Type': 'text/plain' });
-          // res.write('404 - Route not found'); 
-          // res.end();
           return undefined;
         }
         response.sendText(res, 400, '400 - Bad request');
-        // res.writeHead(400, { 'Content-Type': 'text/plain' });
-        // res.write('400 - Bad request');
-        // res.end();
         return undefined;
       });
   };
